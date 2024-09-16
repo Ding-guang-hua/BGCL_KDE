@@ -76,27 +76,22 @@ class Coach:
 	#准备模型的训练
 	def prepareModel(self):
 		self.model = Model(self.handler).cuda()
-		#torch.optim.Adam() 用于实例化一个 Adam 优化器对象。self.model.parameters() 返回模型 self.model 中的所有可训练参数，这些参数将在优化过程中被更新。
-		# lr=args.lr 设置了学习率，其中 args.lr 可能是通过参数传递进来的学习率值。
-		# weight_decay=0 是 Adam 优化器的一个超参数，用于控制权重衰减或 L2 正则化项的强度，这里设置为0表示没有权重衰减。
+		
 		self.opt = torch.optim.Adam(self.model.parameters(), lr=args.lr, weight_decay=0)
 
-		#                                            噪音比例           最小噪声值        最大噪声值      步骤数量
+		
 		self.diffusion_model = GaussianDiffusion(args.noise_scale, args.noise_min, args.noise_max, args.steps).cuda()
-		out_dims = eval(args.dims) + [args.entity_n]#args.dims维度数组 将其转换为 Python 对象，并将 args.entity_n 添加到数组末尾。用于指定输出张量的维度
-		in_dims = out_dims[::-1]#将 out_dims 列表进行反转，得到输入张量的维度
-		#                                               嵌入大小              是否规范化
+		out_dims = eval(args.dims) + [args.entity_n]
+		in_dims = out_dims[::-1]
+		
 		self.denoise_model = Denoise(in_dims, out_dims, args.d_emb_size, norm=args.norm).cuda()
-		self.denoise_opt = torch.optim.Adam(self.denoise_model.parameters(), lr=args.lr, weight_decay=0)#lr学习率 始化了一个 Adam 优化器 self.denoise_opt，用于优化 self.denoise_model 中的参数
+		self.denoise_opt = torch.optim.Adam(self.denoise_model.parameters(), lr=args.lr, weight_decay=0)
 
-	#对模型进行一轮训练
+	
 	def trainEpoch(self):
 		trnLoader = self.handler.trnLoader
-		trnLoader.dataset.negSampling()#对每个正样本生成一个负样本
-		#epLoss: 用于记录整个 epoch 的总损失。
-		# epRecLoss: 用于记录重构损失。
-		# epClLoss: 用于记录对比损失。epDiLoss: 用于记录扩散损失。
-		# epUKLoss: 用于记录 UKGC（User Knowledge Graph Construction） 损失
+		trnLoader.dataset.negSampling()
+		
 		epLoss, epRecLoss, epClLoss = 0, 0, 0
 		epDiLoss, epUKLoss = 0, 0
 		steps = trnLoader.dataset.__len__() // args.batch
