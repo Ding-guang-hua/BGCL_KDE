@@ -251,12 +251,7 @@ class Coach:
 				epRecall += recall
 				epNdcg += ndcg
 				log('Steps %d/%d: recall = %.2f, ndcg = %.2f          ' % (i, steps, recall, ndcg), save=False, oneline=True)
-			else:
-				roc_auc, aupr = self.calcAUC(topLocs.cpu().numpy(), self.handler.tstLoader.dataset.tstLocs, self.handler.tstLoader.dataset.tstNegs, usr)
-				epAUROC += roc_auc  
-				epAUPR += aupr  
-				log('Steps %d/%d: auroc = %.2f, aupr = %.2f          ' % (i, steps, roc_auc, aupr), save=False,
-					oneline=True)
+			
 		ret = dict()
 		if args.drug_pattern == 0:
 			ret['Recall'] = epRecall / num
@@ -285,57 +280,7 @@ class Coach:
 			allRecall += recall
 			allNdcg += ndcg
 		return allRecall, allNdcg
-	def calcAUC(self, topLocs, tstLocs, negs, batIds):
-		assert topLocs.shape[0] == len(batIds)
-		TPR =[]
-		FPR = []
-		PRec = []
-		for i in range(len(batIds)):
-			temTopLocs = list(topLocs[i])
-			temTstLocs = tstLocs[batIds[i]]
-			temNegs = negs[batIds[i]]  
-			if not temTstLocs or not temNegs:
-				continue
-
-			tstNum = len(temTstLocs)
-			negNum = len(temNegs) 
-
-			tp = dcg = 0
-			precision = fp = 0
-			for val in temTstLocs:
-				if val in temTopLocs:
-					tp += 1
-
-			if tp == 0:
-				continue
-			for val in temNegs:
-				if val in temTopLocs:
-					fp += 1
-			if tp + fp == 0:
-				precision = 0
-			else:
-				precision = tp / (tp + fp)
-			tpr = tp / tstNum
-			fpr = fp / negNum
-
-			TPR.append(tpr)
-			FPR.append(fpr)
-			PRec.append(precision)
-
-		TPR.append(1.0)
-		FPR.append(1.0)
-		PRec.append(1.0)
-		TPR.append(0)
-		FPR.append(0)
-		PRec.append(0)
-		FPR_sorted = sorted(FPR)
-		TPR_sorted = sorted(TPR)
-		PR_sorted = sorted(PRec)
-		
-		roc_auc = auc(FPR_sorted, TPR_sorted)
-		aupr = auc(TPR_sorted, PR_sorted)
-
-		return roc_auc, aupr
+	
 def seed_it(seed):
 	random.seed(seed)
 	os.environ["PYTHONSEED"] = str(seed)
