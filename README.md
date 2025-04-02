@@ -1,4 +1,4 @@
-### BGCL_KDE
+# BGCL-KDE: Bipartite Graphs Contrastive Learning with Knowledge-aware Diffusion-Enhanced
 
 ![BGCL-KDE](./BGCL-KDE.png)
 
