@@ -83,3 +83,7 @@ python Main.py --data movie --e_loss 0.1 --temp 0.5 --ssl_reg 0.01 --mess_dropou
 Performance comparison of baselines on different datasets in terms of Recall@20 and NDCG@20:
 
 ![](./performance.png)
+
+## Acknowledgements
+
+We are particularly grateful to the authors of [DiffKG](https://arxiv.org/pdf/2312.16890.pdf)  and [KG-Diverse](https://dl.acm.org/doi/10.1145/3616855.3635803), as parts of our code implementation were derived from their work. We have cited the relevant references in our paper.
