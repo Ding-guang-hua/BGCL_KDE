@@ -2,8 +2,6 @@
 
 ![BGCL-KDE](./BGCL-KDE.png)
 
- [DiffKG] The predecessor of this work: [**DiffKG: Knowledge Graph Diffusion Model for Recommendation**](https://arxiv.org/pdf/2312.16890.pdf) can be found [here](https://github.com/HKUDS/DiffKG).
-
 ## 📝 Environment
 
 We develop our codes in the following environment or install all dependencies listed in *requirements.txt*:
